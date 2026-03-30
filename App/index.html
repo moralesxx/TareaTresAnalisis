@@ -1,11 +1,65 @@
+<?php
+include 'config.php';
+session_start();
+
+// Simulación de login para la tarea (puedes crear un login real luego)
+if(!isset($_SESSION['user_id'])) {
+    $_SESSION['user_id'] = 1; // ID del usuario "Isaiah" por defecto
+    $_SESSION['username'] = "Isaiah";
+}
+
+// Acción de Cifrar
+if (isset($_POST['cifrar'])) {
+    $texto = $_POST['texto_original'];
+    $token = bin2hex(random_bytes(4)); // Genera un token corto de 8 caracteres
+    $cifrado = Encryptor::encrypt($texto);
+    $user_id = $_SESSION['user_id'];
+
+    $sql = "INSERT INTO registros (usuario_id, texto_original, texto_cifrado, token) VALUES ('$user_id', '$texto', '$cifrado', '$token')";
+    $conn->query($sql);
+}
+?>
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
+    <title>Sistema de Cifrado - Tarea 3</title>
+    <link rel="stylesheet" href="style.css"> </head>
 <body>
+    <h1>Bienvenido, <?php echo $_SESSION['username']; ?></h1>
     
+    <section>
+        <h2>Cifrar Nuevo Texto</h2>
+        <form method="POST">
+            <textarea name="texto_original" required placeholder="Escribe aquí..."></textarea>
+            <button type="submit" name="cifrar">Cifrar y Guardar</button>
+        </form>
+    </section>
+
+    <section>
+        <h2>Tu Historial (Solo tus datos)</h2>
+        <table border="1">
+            <tr>
+                <th>Fecha/Hora</th>
+                <th>Token</th>
+                <th>Quién lo ingresó</th>
+                <th>Texto Original</th>
+                <th>Acción</th>
+            </tr>
+            <?php
+            $uid = $_SESSION['user_id'];
+            $res = $conn->query("SELECT * FROM registros WHERE usuario_id = '$uid' ORDER BY fecha_hora DESC");
+            while($row = $res->fetch_assoc()): ?>
+            <tr>
+                <td><?php echo $row['fecha_hora']; ?></td>
+                <td><strong><?php echo $row['token']; ?></strong></td>
+                <td><?php echo $_SESSION['username']; ?></td>
+                <td><?php echo $row['texto_original']; ?></td>
+                <td><button onclick="alert('Descifrando con token...')">Ver Detalle</button></td>
+            </tr>
+            <?php endwhile; ?>
+        </table>
+    </section>
 </body>
 </html>
