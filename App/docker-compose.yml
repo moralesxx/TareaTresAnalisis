@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  # Servidor Web con PHP 8.2
+  php-apache:
+    image: php:8.2-apache
+    container_name: tarea3_app
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/var/www/html
+    networks:
+      - app-network
+    depends_on:
+      - db
+    # Instalamos la extensión mysqli para que PHP conecte con MySQL
+    command: >
+      sh -c "docker-php-ext-install mysqli && apache2-foreground"
+
+  # Base de Datos MySQL
+  db:
+    image: mysql:8.0
+    container_name: tarea3_db
+    restart: always
+    environment:
+      MYSQL_DATABASE: cifrado_DB
+      MYSQL_ROOT_PASSWORD: ""
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+    ports:
+      - "3308:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  db_data:
