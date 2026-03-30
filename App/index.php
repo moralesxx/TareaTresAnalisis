@@ -5,7 +5,7 @@ session_start();
 // Mecanismo de identificación (Requerimiento de la tarea)
 if(!isset($_SESSION['user_id'])) {
     $_SESSION['user_id'] = 1; 
-    $_SESSION['username'] = "Isaiah";
+    $_SESSION['username'] = "Isaías";
 }
 
 // Lógica para cifrar y guardar
@@ -29,7 +29,7 @@ if (isset($_POST['cifrar'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Cifrado - Tarea 3</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="estilos.css">
 </head>
 <body>
     <div class="container">
